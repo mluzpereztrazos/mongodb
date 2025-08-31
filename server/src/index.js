@@ -1,17 +1,29 @@
-const express = require('express');
-const app = express();
-const port = 3000;
-const cors = require('cors');
+// ⚠️ Cargar dotenv primero
+require('dotenv').config();
 
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Configuración de CORS
 const corsOptions = {
-  origin: '*', // Orígenes permitidos (cuando esté en un dominio real, lo cambiaremos por ese dominio)
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'] // Headers permitidos
+  origin: '*',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+// Conectar a MongoDB y luego levantar el servidor
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error('❌ Error iniciando el servidor:', err);
+  process.exit(1);
 });
